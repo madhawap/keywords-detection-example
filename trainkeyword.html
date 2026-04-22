@@ -1,0 +1,88 @@
+<!--
+  Extend the pretrained 18-word speech-commands model with your own keywords
+  using transfer learning (speechCommands.createTransfer).
+
+  Type the word you want to teach, click "Record", and say it once within 1 second.
+  Do this ~15-25 times per keyword. Also record some background noise. Then Train
+  and Save. The model persists to the browser's IndexedDB under the model name,
+  and keywordlistener.html loads it from there by the same name.
+-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Train Custom Keywords</title>
+    <script src="vendor/tf.min.js"></script>
+    <script src="vendor/speech-commands.min.js"></script>
+    <style>
+      body { font-family: sans-serif; max-width: 760px; margin: 24px auto; padding: 0 16px; }
+      h1 { margin-bottom: 4px; }
+      .hint { color: #555; font-size: 14px; line-height: 1.5; }
+      .row { margin: 14px 0; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+      input[type=text], input[type=number] {
+        padding: 8px 10px; font-size: 14px; border: 1px solid #bbb; border-radius: 6px;
+      }
+      input[type=text] { width: 180px; }
+      input[type=number] { width: 80px; }
+      button {
+        padding: 9px 14px; font-size: 14px; border: 1px solid #888;
+        background: #f5f5f5; border-radius: 6px; cursor: pointer;
+      }
+      button:disabled { opacity: 0.5; cursor: not-allowed; }
+      button.recording { background: #ffd9d9; border-color: #c00; }
+      #counts { font-family: monospace; margin-top: 4px; color: #333; }
+      #status { margin-top: 10px; min-height: 22px; color: #1a7f37; font-family: monospace; }
+      .group { border: 1px solid #e3e3e3; padding: 10px 14px; border-radius: 8px; margin: 10px 0; }
+      label.inline { font-size: 13px; color: #555; }
+    </style>
+  </head>
+  <body>
+    <h1>Train Custom Keywords</h1>
+    <p class="hint">
+      This page uses <b>transfer learning</b> on top of the pretrained 18-word
+      speech-commands model. You only need ~15–25 recordings per keyword.
+      Type each keyword name below, click <b>Record</b>, then say the word once
+      within the 1-second recording window.
+      Clicking <b>Save Model</b> downloads three files
+      (<code>&lt;name&gt;.json</code>, <code>&lt;name&gt;.weights.bin</code>,
+      <code>&lt;name&gt;.metadata.json</code>) to your Downloads folder — point
+      <code>keywordlistener.html</code> at those three files to use the model.
+    </p>
+
+    <div class="group">
+      <div class="row">
+        <label class="inline">Model file name:</label>
+        <input type="text" id="modelName" value="my-keywords" />
+      </div>
+
+      <div class="row">
+        <input type="text" id="kw1" value="start" />
+        <button id="rec1" onclick="recordKeyword(1)">Record</button>
+      </div>
+      <div class="row">
+        <input type="text" id="kw2" value="stop" />
+        <button id="rec2" onclick="recordKeyword(2)">Record</button>
+      </div>
+      <div class="row">
+        <input type="text" id="kw3" value="go" />
+        <button id="rec3" onclick="recordKeyword(3)">Record</button>
+      </div>
+      <div class="row">
+        <label class="inline" style="flex: 1;">Background noise / silence:</label>
+        <button id="recN" onclick="recordNoise()">Record Noise</button>
+      </div>
+      <div id="counts">No examples yet.</div>
+    </div>
+
+    <div class="row">
+      <label class="inline">Epochs:</label>
+      <input type="number" id="epochs" value="25" min="1" max="200" />
+      <button id="train" onclick="train()">Train</button>
+      <button id="save" onclick="saveModel()" disabled>Save Model</button>
+      <button id="clear" onclick="clearAll()">Reset Session</button>
+    </div>
+
+    <div id="status">Loading…</div>
+
+    <script src="trainkeyword.js"></script>
+  </body>
+</html>

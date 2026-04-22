@@ -1,0 +1,73 @@
+<!--
+  Load a transfer-learning model saved by trainkeyword.html (by model name, from
+  this browser's IndexedDB) and listen for those keywords through the microphone.
+-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Keyword Listener</title>
+    <script src="vendor/tf.min.js"></script>
+    <script src="vendor/speech-commands.min.js"></script>
+    <style>
+      body { font-family: sans-serif; max-width: 760px; margin: 24px auto; padding: 0 16px; }
+      h1 { margin-bottom: 4px; }
+      .hint { color: #555; font-size: 14px; line-height: 1.5; }
+      .row { margin: 14px 0; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+      input[type=text], input[type=file] {
+        padding: 8px 10px; font-size: 14px; border: 1px solid #bbb; border-radius: 6px;
+      }
+      input[type=text] { width: 200px; }
+      .inline { font-size: 13px; color: #555; }
+      button {
+        padding: 9px 14px; font-size: 14px; border: 1px solid #888;
+        background: #f5f5f5; border-radius: 6px; cursor: pointer;
+      }
+      button:disabled { opacity: 0.5; cursor: not-allowed; }
+      #labels { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
+      .label {
+        flex: 1 1 140px; min-width: 140px; text-align: center;
+        padding: 16px 0 12px; border-radius: 8px;
+        background: #eee; font-size: 18px; font-weight: 600;
+        transition: background 0.15s, color 0.15s;
+      }
+      .label.active { background: #1a7f37; color: white; }
+      .count { display: block; font-size: 13px; font-weight: 400; margin-top: 6px; opacity: 0.85; }
+      #status { margin-top: 10px; min-height: 22px; color: #1a7f37; font-family: monospace; }
+      .known { margin-top: 10px; font-size: 13px; color: #555; }
+      .known code { background: #f3f3f3; padding: 1px 6px; border-radius: 4px; }
+    </style>
+  </head>
+  <body>
+    <h1>Keyword Listener</h1>
+    <p class="hint">
+      Pick the three files that <code>trainkeyword.html</code> downloaded:
+      <code>&lt;name&gt;.json</code>, <code>&lt;name&gt;.weights.bin</code>, and
+      <code>&lt;name&gt;.metadata.json</code>. Then click Load Model.
+    </p>
+
+    <div class="row">
+      <label class="inline" style="min-width: 80px;">.json:</label>
+      <input type="file" id="modelFile" accept=".json" />
+    </div>
+    <div class="row">
+      <label class="inline" style="min-width: 80px;">.bin:</label>
+      <input type="file" id="weightsFile" accept=".bin" />
+    </div>
+    <div class="row">
+      <label class="inline" style="min-width: 80px;">metadata:</label>
+      <input type="file" id="metadataFile" accept=".json" />
+    </div>
+
+    <div class="row">
+      <button id="load" onclick="loadModel()">Load Model</button>
+      <button id="listen" onclick="toggleListen()" disabled>Listen</button>
+      <button id="reset" onclick="resetCounts()" disabled>Reset Counts</button>
+    </div>
+
+    <div class="known" id="known"></div>
+    <div id="labels"></div>
+    <div id="status">Enter the model name and click Load Model.</div>
+
+    <script src="keywordlistener.js"></script>
+  </body>
+</html>
